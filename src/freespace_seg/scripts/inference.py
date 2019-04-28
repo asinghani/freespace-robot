@@ -8,10 +8,10 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.backend import set_session, set_floatx
 from tensorflow.keras.layers import DepthwiseConv2D
 
-from vis import view_seg_map
+from nn.vis import view_seg_map
 
-from config import Config
-from models.deeplab_mobilenet import DeepLabV3_MobileNetV2
+from nn.config import Config
+from nn.models.deeplab_mobilenet import DeepLabV3_MobileNetV2
 
 from tqdm import tqdm
 

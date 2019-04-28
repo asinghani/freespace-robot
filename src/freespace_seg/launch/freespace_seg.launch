@@ -7,7 +7,7 @@
         camera_type: fisheye
         distortion_coefficients: [-0.0416003700208058, -0.0010619390081457224, -0.0025340873193225645, 0.00033806765902935583]
         camera_matrix: [239.77871918748104, 0.0, 331.0488962885363, 0.0, 239.63755554252606, 229.2049971397756, 0.0, 0.0, 1.0]
-        camera_height: 0.8333
+        camera_height: 0.234
 
         model_path: /home/ubuntu/model_tx2.h5
         input_shape: [224, 224]
