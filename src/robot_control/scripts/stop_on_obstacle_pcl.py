@@ -26,7 +26,6 @@ width = float(rospy.get_param("width", 0.6)) / 2.0 # meters, (half to left half 
 thresh = float(rospy.get_param("threshold_distance", 0.55))
 
 def safe(): # check if safe to proceed forward (given lidar data)
-    # TODO use conversion to pointcloud or center/width threshold instead of hardcoded locations
     if pclMsg is None:
         return True
     points = [abs(point.y) for point in pclMsg.points if abs(point.x) < width]

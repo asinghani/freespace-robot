@@ -11,7 +11,7 @@ from tensorflow.keras.layers import DepthwiseConv2D
 from nn.vis import view_seg_map
 
 from nn.config import Config
-from nn.models.floornet import FloorNet
+from nn.models.deeplab_mobilenet import DeepLabV3_MobileNetV2
 
 from tqdm import tqdm
 
@@ -53,42 +53,29 @@ class Inference:
         session = tf.Session(config=tf_config)
         set_session(session)
 
-        self.model = FloorNet(config)
+        self.model = DeepLabV3_MobileNetV2(config, tx2_gpu=True)
         self.model.load_weights(model_path)
 
 
         rospy.loginfo("Model loaded where input_shape = {} and output_shape = {}".format(self.model.input_shape[1:], self.model.output_shape[1:]))
 
 
-    def _preprocess(self, img):
-        img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        x = cv2.Sobel(img2, cv2.CV_32F, 1, 0, ksize=3)
-        x = cv2.convertScaleAbs(x) / 255.0
-        x = x.reshape((x.shape[0], x.shape[1], 1))
-        y = cv2.Sobel(img2, cv2.CV_32F, 0, 1, ksize=3)
-        y = cv2.convertScaleAbs(y) / 255.0
-        y = y.reshape((y.shape[0], y.shape[1], 1))
-        z = cv2.Laplacian(img2, cv2.CV_32F)
-        z = cv2.convertScaleAbs(z) / 255.0
-        z = z.reshape((z.shape[0], z.shape[1], 1))
-        image2 = np.concatenate((x, y, z), axis=2)
-        image2 = cv2.resize(image2, (112, 112))
-        nnInput = np.array(img, dtype=np.float32) / 255.0
+    def _preprocess(self, image):
+        """
+        Preprocesses an OpenCV format image (0-255, BGR) into proper input format for neural network
+        """
 
-        nnInput = 2 * (nnInput - 0.5)
-        image2 = 2 * (image2 - 0.5)
-
-        return [nnInput[:, :, ::-1].reshape((1, 224, 224, 3)), image2.reshape((1, 112, 112, 3))]
+        # Scale from [0, 255] to [0, 1] and BGR to RGB 
+        return (image / 255.0)[:, :, ::-1]
 
     def predict(self, image, visualization=False):
         """
         Runs model on an OpenCV camera image and outputs a binary segmentation map and optionally a visualization image
         """
-        image = cv2.resize(image[int(image.shape[0] * 0.375):], (224, 224))
-        input = self._preprocess(image)
+        image = cv2.resize(self._preprocess(image), (224, 224))
 
         start_time = millis_time()
-        predictions = self.model.predict(input)[0]
+        predictions = self.model.predict(np.array([image]))[0]
         print("Prediction time: {}ms".format(millis_time() - start_time))
 
         predictions = predictions.reshape((image.shape[0], image.shape[1], 2))

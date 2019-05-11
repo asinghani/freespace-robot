@@ -27,7 +27,6 @@ width = int(rospy.get_param("width", 20)) # degrees
 thresh = float(rospy.get_param("threshold_distance", 1.5))
 
 def safe(): # check if safe to proceed forward (given lidar data)
-    # TODO use conversion to pointcloud or center/width threshold instead of hardcoded locations
     if lidarMsg is None:
         return True
     points = lidarMsg.ranges[0:10] + lidarMsg.ranges[-10:]
