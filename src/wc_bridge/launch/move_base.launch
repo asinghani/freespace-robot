@@ -1,0 +1,12 @@
+<launch>
+    <!-- Launch rosserial tunnel for STM32 to control WC -->
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial_bridge_stm32_controller">
+        <rosparam>
+            port: /dev/serial/by-id/usb-STMicroelectronics_STM32_STLink_0671FF564857786767163122-if02
+        </rosparam>
+    </node>
+
+    <!-- Main bridge between WC and ROS - converts between standard ROS messages and WC messages (via rosserial) -->
+    <node pkg="wc_bridge" type="bridge.py" name="wc_controller_bridge_node" />
+
+</launch>
