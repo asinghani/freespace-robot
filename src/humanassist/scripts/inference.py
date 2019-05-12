@@ -42,7 +42,7 @@ class Inference:
         image2 = 2 * (image2 - 0.5)
         image2 = image2.reshape((1, 112, 112, 3))
 
-        prediction = sess.run(output_tensor, {input_tensor_name: nnInput, aux_input_tensor_name: image2})
+        prediction = self.sess.run(self.output_tensor, {self.input_tensor_name: nnInput, self.aux_input_tensor_name: image2})
 
         seg = prediction[0].argmax(axis=2).astype(np.float32)
         seg = cv2.resize(seg, (image.shape[1], image.shape[0]))
